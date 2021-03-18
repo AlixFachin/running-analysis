@@ -1,0 +1,12 @@
+body {
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+canvas {
+    border: solid 5px teal;
+}
+
+#paramForm {
+    margin-bottom: 10px;
+    margin-top:5px;
+}

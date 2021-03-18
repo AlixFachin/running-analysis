@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<head>
+    <Title> Try to parse a TCX file and plot with chart.js </Title>
+    <link rel="stylesheet" href="index.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1>  Result </h1>
+    <div id="fileChooser">
+        <input type="file" id="file-input" />
+        <button id="read-button">Read and Parse File</button>
+        <p id="messageArea"></p>
+
+        <!-- Graph parameters selector -->
+        <div id="paramForm">
+            <div class="formWidget">
+                <label for="minRange">Choose start time:</label>
+                <input type="range" id="minRange" min="0" max="10" name="minRange" value="0">
+            </div>
+            <div class="formWidget">
+                <label for="maxRange">Choose end time:</label>
+                <input type="range" id="maxRange" min="0" max="10" name="maxRange" value="100">
+            </div>
+        <!-- Radio buttons for X axis -->
+            <div class="formWidget">
+                <label>X Axis:</label>
+                <input type="radio" id="speed_x" name="radio_x" value="speed" > <label for="speed_x">Speed</label>
+                <input type="radio" id="alt_x" name="radio_x" value="altitude" checked> <label for="alt_x">Altitude</label>
+                <input type="radio" id="hr_x" name="radio_x" value="hr" > <label for="hr_x">HR</label>
+                <input type="radio" id="altgrad_x" name="radio_x" value="altGrad" > <label for="alt_grad_x">Alt Gradient</label>
+                <input type="radio" id="spdgrad_x" name="radio_x" value="spdGrad" > <label for="spd_grad_x">Speed Gradient</label>
+            </div>
+        <!-- Radio buttons for Y axis -->
+            <div class="formWidget">
+                <label>Y axis:</label>
+                <input type="radio" id="speed_y" name="radio_y" value="speed"> <label for="speed_y">Speed</label>
+                <input type="radio" id="alt_y" name="radio_y" value="altitude" > <label for="alt_y">Altitude</label>
+                <input type="radio" id="hr_y" name="radio_y" value="hr" checked > <label for="hr_y">HR</label>
+                <input type="radio" id="altgrad_y" name="radio_y" value="altGrad" > <label for="alt_grad_y">Alt Gradient</label>
+                <input type="radio" id="spdgrad_y" name="radio_y" value="spdGrad" > <label for="spd_grad_y">Speed Gradient</label>
+            </div>
+
+        </div>
+
+    </div>
+    <div id="chartArea">
+        <canvas width="600" height="600" id="mainGraph"> </canvas>
+        <canvas width="600" height="600" id="XYGraph"> </canvas>
+    </div>
+
+
+
+    <script src="index.js"> // Will add functions required to parse variable </script>
+    <script>
+        function getRadioValue(radioGroupName) {
+            const radioGroup = document.querySelectorAll(`input[name=${radioGroupName}]`);
+            for (let i=0; i<radioGroup.length; i++) {
+                if (radioGroup[i].checked) {
+                    return radioGroup[i].value;
+                }
+            }
+            return undefined;
+        }
+        
+        function clearGraphs(contextArray) {
+            contextArray.forEach(ctx => { Chart.getChart(ctx).destroy(); });
+        }
+
+        // Global window variable containing data
+        window.trackData = [];
+
+        // Getting the graph context
+        const ctx_ts = document.getElementById('mainGraph').getContext('2d');       
+        const ctx_xy = document.getElementById('XYGraph').getContext('2d');
+
+        // Setting up the file loader
+        document.querySelector('#read-button').addEventListener('click', e => {
+            if (document.querySelector('#file-input').files.length === 0) {
+                document.querySelector('#messageArea').innerHTML = `Error: No file selected`;
+                return;
+            }
+
+            const file = document.querySelector('#file-input').files[0];
+            const fileReader = new FileReader();
+
+            if (getChart(ctx_ts)) {getChart(ctx_ts).destroy();}
+            if (getChart(ctx_xy)) {getChart(ctx_xy).destroy();}
+            
+
+            fileReader.addEventListener('load', e => {
+                const text = e.target.result;
+                // Calling the parsing function
+                let xmlParseFunction = getXMLParser();
+                const xmlDocument = xmlParseFunction(text);
+                findDataInXML(xmlDocument, trackData);
+                
+                addTimeSeriesGraph(ctx_ts, trackData, getRadioValue('radio_y'));
+                addXYScatterGraph(ctx_xy, trackData, getRadioValue('radio_x'), getRadioValue('radio_y'));                
+
+            }); 
+
+            fileReader.addEventListener('error', e => {
+                document.querySelector('#messageArea').innerHTML = 'Error in the file reading'
+            })
+
+            fileReader.readAsText(file);
+
+        });
+
+        // Setting up widget-update related events
+        document.querySelectorAll('input[name=radio_y]').forEach(widget => widget.addEventListener('change', 
+            () =>  {
+                updateTimeSeriesGraph(ctx_ts, trackData, getRadioValue('radio_y'));
+                updateScatterGraph(ctx_xy, trackData, getRadioValue('radio_x'), getRadioValue('radio_y'))
+             }));
+        document.querySelectorAll('input[name=radio_x]').forEach(widget => widget.addEventListener('change', 
+        () =>  {
+            updateScatterGraph(ctx_xy, trackData, getRadioValue('radio_x'), getRadioValue('radio_y'))
+        }));
+
+
+    </script>
+</body>
