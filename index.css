@@ -3,7 +3,8 @@ body {
 }
 
 canvas {
-    border: solid 5px teal;
+    border: solid 1px teal;
+    margin: 5px 0px 5px 0px;
 }
 
 #paramForm {

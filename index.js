@@ -88,6 +88,15 @@ function getChart(context) {
 
 }
 
+function gradientColor(context) {
+    
+    
+    var index = context.dataIndex;
+    var totalNumber = context.dataset.data.length;
+    return `hsl(30,${Math.trunc(index/totalNumber*100)}%,50%)`
+    
+}
+
 function addTimeSeriesGraph(context, dataTable, yAxis='speed') {
 
     const chartData = getTimeSeries(dataTable, yAxis);
@@ -96,7 +105,9 @@ function addTimeSeriesGraph(context, dataTable, yAxis='speed') {
         data: {
             datasets: [{
                 label: yAxis,
-                data: chartData,  
+                data: chartData,
+                borderColor: gradientColor,
+                //backgroundColor: 'red',
            }],
         },
         options: {
@@ -148,7 +159,8 @@ function addXYScatterGraph(context, dataTable, xAxis, yAxis) {
         data: {
             datasets: [{
                 label: yAxis,
-                data: chartData,  
+                data: chartData,
+                borderColor: gradientColor,  
            }],
         },
         options: {
