@@ -3,32 +3,52 @@ html {
     background: url("img/sporlab-running-unsplash.jpg") center no-repeat;
     background-size: cover;
     min-height: 100vh;
-    display:flex;
-    justify-content:center;
-    align-items: center;
-    text-align: center;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 
+}
+
+body {
+    display:flex;
+    flex-direction: column;
+    justify-content:space-around;
+    align-items: center;
+    width: 100%;
 }
 
 h1 {
     font-family: 'Palanquin Dark', sans-serif;
     color: #E76F51;
+    text-align: center;
 }
 
-#fileChooser {
+#paramPanel {
     background: rgba(255,255,255,0.8);
     box-shadow: 0 0 0 10px rgba(0,0,0,0.1);
+    max-width: 800px;
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+    margin-bottom: 25px;
+
 }
 
 #chartArea {
     background: rgba(255,255,255,0.6);
     box-shadow: 0 0 0 10px rgba(0,0,0,0.1);
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+    display:flex;
+    flex-flow: row nowrap;
+    max-width: 800px;
+}
+
+.formWidget {
+    margin-bottom: 1.5em;
 }
 
 canvas {
-    border: solid 1px teal;
-    margin: 5px 0px 5px 0px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border: 1px solid darkgray;
 }
 
 #paramForm {
@@ -37,6 +57,7 @@ canvas {
 }
 
 p.credit {
-    font-size: smaller;
+    font-size: x-small;
     font-style: italic;
+    text-align: center;
 }

@@ -107,11 +107,11 @@ function addTimeSeriesGraph(context, dataTable, yAxis='speed') {
                 label: yAxis,
                 data: chartData,
                 borderColor: gradientColor,
-                //backgroundColor: 'red',
+                fill: false,
            }],
         },
         options: {
-            responsive:false,
+            responsive:true,
             maintainAspectRatio:true,
             legend:false,
             scales: {
@@ -121,6 +121,13 @@ function addTimeSeriesGraph(context, dataTable, yAxis='speed') {
                         //2021-03-15T01:42:26.000Z
                         parser: "YYYY-MM-DDTHH:MM:SS",
                     }
+                }],
+                yAxes: [{
+                    display:'true',
+                    scaleLabel: {
+                        display: true,
+                        labelString: yAxis
+                    },
                 }]
             }
         }
@@ -160,17 +167,29 @@ function addXYScatterGraph(context, dataTable, xAxis, yAxis) {
             datasets: [{
                 label: yAxis,
                 data: chartData,
-                borderColor: gradientColor,  
+                borderColor: gradientColor,
+                fill: false,
            }],
         },
         options: {
-            responsive:false,
+            responsive:true,
             maintainAspectRatio:true,
             legend:false,
             scales: {
                 xAxes: [{
                     type:'linear',
                     position: 'bottom',
+                    scaleLabel: {
+                        display: true,
+                        labelString: xAxis
+                    },
+                }],
+                yAxes: [{
+                    display:'true',
+                    scaleLabel: {
+                        display: true,
+                        labelString: yAxis
+                    },
                 }]
             }
         }

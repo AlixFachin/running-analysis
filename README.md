@@ -1,6 +1,6 @@
 # Overview
 
-This project started as a test case for getting myself familiar with the (chart.js)[https://www.chartjs.org/] library.
+This project started as a test case for getting myself familiar with the [chart.js](https://www.chartjs.org/) library.
 
 # How does it work
 The main file is the `index.html` file which imports all the others.
