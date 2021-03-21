@@ -45,7 +45,6 @@ function showHideElement(elementID) {
 
 }
 
-
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 class Trackpoint {
@@ -254,9 +253,23 @@ function getXYSeries(dataArray, xAxis, yAxis) {
 
 }
 
-function filterDataForRange(slider) {
+function filterDataForRange(slider, dataTable) {
     const [start, stop] = slider.noUiSlider.get();
-    document.getElementById('sliderMin').innerText = start;
-    document.getElementById('sliderMax').innerText = stop;
+
+    if (dataTable === undefined || dataTable.length === 0) {
+        document.getElementById('sliderMin').innerText = start;
+        document.getElementById('sliderMax').innerText = stop;
+    } else {
+        const firstIndex = Math.trunc(start/100*dataTable.length);
+        const lastIndex = Math.trunc(stop/100*dataTable.length);
+        const firstDate = new Date(dataTable[firstIndex].timestamp);
+        const lastDate = new Date(dataTable[lastIndex].timestamp);
+        document.getElementById('sliderMin').innerText = firstDate.toLocaleTimeString();
+        document.getElementById('sliderMax').innerText = lastDate.toLocaleTimeString();
+
+        // Setting the values for the 
+
+
+    }
 
 }

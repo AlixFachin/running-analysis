@@ -80,3 +80,8 @@ p.credit {
     font-style: italic;
     text-align: center;
 }
+
+/* Overriding color for the slider widget */
+.noUi-connect {
+    background: #E76F51;
+  }
