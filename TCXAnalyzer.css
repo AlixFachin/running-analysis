@@ -1,7 +1,7 @@
 html {
     box-sizing: border-box;
-    background: url("img/sporlab-running-unsplash.jpg") center no-repeat;
-    background-size: cover;
+    background: url("img/road-running-mountain-unsplash.jpg") top no-repeat;
+    background-size: 100% auto;
     min-height: 100vh;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 
@@ -21,7 +21,7 @@ h1 {
     text-align: center;
 }
 
-#paramPanel {
+#headerArea {
     background: rgba(255,255,255,0.8);
     box-shadow: 0 0 0 10px rgba(0,0,0,0.1);
     max-width: 800px;
@@ -32,13 +32,29 @@ h1 {
 }
 
 #chartArea {
-    background: rgba(255,255,255,0.6);
+    display:flex;
+    flex-direction: column;
+    max-width: 800px;
+    background: rgba(255,255,255,0.75);
     box-shadow: 0 0 0 10px rgba(0,0,0,0.1);
+}
+
+.chartBox {
     padding-left: 1.5em;
     padding-right: 1.5em;
     display:flex;
-    flex-flow: row nowrap;
+    flex-direction: column;
     max-width: 800px;
+}
+
+.paramArea {
+    background: rgba(255,255,255,0.85);
+    padding-left: 2em;
+    padding-right: 2em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    border-radius: 10px;    
+    margin-top: 2px;
 }
 
 .formWidget {
@@ -49,6 +65,9 @@ canvas {
     margin-top: 5px;
     margin-bottom: 5px;
     border: 1px solid darkgray;
+    visibility: visible;
+    display: block;
+    transition: all ease-in-out 0.5s;
 }
 
 #paramForm {

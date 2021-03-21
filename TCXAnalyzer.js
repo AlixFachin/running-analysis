@@ -1,3 +1,4 @@
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 function getXMLParser() {
     let parseXml;
@@ -20,6 +21,30 @@ function getXMLParser() {
 
     return parseXml;
 }
+/* HTML Helper function */
+
+function getRadioValue(radioGroupName) {
+    const radioGroup = document.querySelectorAll(`input[name=${radioGroupName}]`);
+    for (let i=0; i<radioGroup.length; i++) {
+        if (radioGroup[i].checked) {
+            return radioGroup[i].value;
+        }
+    }
+    return undefined;
+}
+
+function showHideElement(elementID) {
+    const elementNode = document.querySelector(`#${elementID}`);
+    if (elementNode.style.visibility === 'hidden') {
+        elementNode.style.display = 'block';
+        elementNode.style.visibility = 'visible';
+    } else {
+        elementNode.style.display = 'none';
+        elementNode.style.visibility = 'hidden';
+    }
+
+}
+
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -111,7 +136,7 @@ function addTimeSeriesGraph(context, dataTable, yAxis='speed') {
            }],
         },
         options: {
-            responsive:true,
+            responsive:false,
             maintainAspectRatio:true,
             legend:false,
             scales: {
@@ -172,7 +197,7 @@ function addXYScatterGraph(context, dataTable, xAxis, yAxis) {
            }],
         },
         options: {
-            responsive:true,
+            responsive:false,
             maintainAspectRatio:true,
             legend:false,
             scales: {
@@ -228,3 +253,4 @@ function getXYSeries(dataArray, xAxis, yAxis) {
     return dataArray.map(tp => ({ x: getXData(tp), y: getYData(tp) }));
 
 }
+

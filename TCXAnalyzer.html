@@ -11,7 +11,7 @@
 <body>
     
     
-    <div id="paramPanel">
+    <div id="headerArea">
         <h1>TCX File Analysis</h1>
         <input type="file" id="file-input" />
         <button id="read-button">Read and Parse File</button>
@@ -19,55 +19,71 @@
 
         <!-- Graph parameters selector -->
         <div id="paramForm">
-         <!-- Radio buttons for Y axis -->
-            <div class="formWidget">
-                <label>Y axis:</label>
-                <input type="radio" id="speed_y" name="radio_y" value="speed"> <label for="speed_y">Speed</label>
-                <input type="radio" id="alt_y" name="radio_y" value="altitude" > <label for="alt_y">Altitude</label>
-                <input type="radio" id="hr_y" name="radio_y" value="hr" checked > <label for="hr_y">HR</label>
-                <input type="radio" id="altgrad_y" name="radio_y" value="altGrad" > <label for="alt_grad_y">Alt Gradient</label>
-                <input type="radio" id="spdgrad_y" name="radio_y" value="spdGrad" > <label for="spd_grad_y">Speed Gradient</label>
-            </div>
-            <!-- Radio buttons for X axis -->
-            <div class="formWidget">
-                <label>X Axis:</label>
-                <input type="radio" id="speed_x" name="radio_x" value="speed" > <label for="speed_x">Speed</label>
-                <input type="radio" id="alt_x" name="radio_x" value="altitude" checked> <label for="alt_x">Altitude</label>
-                <input type="radio" id="hr_x" name="radio_x" value="hr" > <label for="hr_x">HR</label>
-                <input type="radio" id="altgrad_x" name="radio_x" value="altGrad" > <label for="alt_grad_x">Alt Gradient</label>
-                <input type="radio" id="spdgrad_x" name="radio_x" value="spdGrad" > <label for="spd_grad_x">Speed Gradient</label>
-            </div>
             <div class="formWidget">
                 <label for="minRange">Choose start time:</label>
-                <input type="range" id="minRange" min="0" max="10" name="minRange" value="0">
+                <input type="range" id="minRange" min="0" max="100" name="minRange" value="0">
+                <span id="minRangeValue"></span>
             </div>
             <div class="formWidget">
                 <label for="maxRange">Choose end time:</label>
-                <input type="range" id="maxRange" min="0" max="10" name="maxRange" value="100">
+                <input type="range" id="maxRange" min="0" max="100" name="maxRange" value="100">
+                <span id="maxRangeValue"></span>
             </div>
         
         </div>
-        <p class="credit"> background photo by <a href="https://unsplash.com/@sporlab?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">sporlab</a> on <a href="/s/photos/running?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
+        <p class="credit"> 
+            background photo by 
+            <a href="https://unsplash.com/@joshgordon?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Josh Gordon</a> on <a href="/s/photos/running?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
         </p>
     </div>
     
     <div id="chartArea">
-        <canvas width="600" height="600" id="mainGraph"> </canvas>
-        <canvas width="600" height="600" id="XYGraph"> </canvas>
+        <!--  TIME SERIES CHART  -->
+        <div class="chartBox">
+            <div class="paramArea">
+                <!-- Radio buttons for Y axis -->
+                <div class="formWidget">
+                    <label>Y axis:</label>
+                    <input type="radio" id="speed_ts" name="radio_ts" value="speed"> <label for="speed_ts">Speed</label>
+                    <input type="radio" id="alt_ts" name="radio_ts" value="altitude" > <label for="alt_ts">Altitude</label>
+                    <input type="radio" id="hr_ts" name="radio_ts" value="hr" checked > <label for="hr_ts">HR</label>
+                    <button class='btnHide' data-tgt="tsGraph" >Show/Hide graph</button>
+                </div>
+                   
+            </div>
+            <canvas width="600" height="600" id="tsGraph"> </canvas>
+        </div>
+
+        <!--  XY Correlation CHART  -->
+        <div class="chartBox">
+            <div class="paramArea">
+                <!-- Radio buttons for Y axis -->
+                <div class="formWidget">
+                    <label>Y axis:</label>
+                    <input type="radio" id="speed_y" name="radio_y" value="speed"> <label for="speed_y">Speed</label>
+                    <input type="radio" id="alt_y" name="radio_y" value="altitude" > <label for="alt_y">Altitude</label>
+                    <input type="radio" id="hr_y" name="radio_y" value="hr" checked > <label for="hr_y">HR</label>
+                    <input type="radio" id="altgrad_y" name="radio_y" value="altGrad" > <label for="alt_grad_y">Alt Gradient</label>
+                    <input type="radio" id="spdgrad_y" name="radio_y" value="spdGrad" > <label for="spd_grad_y">Speed Gradient</label>
+                </div>
+                <!-- Radio buttons for X axis -->
+                <div class="formWidget">
+                    <label>X Axis:</label>
+                    <input type="radio" id="speed_x" name="radio_x" value="speed" > <label for="speed_x">Speed</label>
+                    <input type="radio" id="alt_x" name="radio_x" value="altitude" checked> <label for="alt_x">Altitude</label>
+                    <input type="radio" id="hr_x" name="radio_x" value="hr" > <label for="hr_x">HR</label>
+                    <input type="radio" id="altgrad_x" name="radio_x" value="altGrad" > <label for="alt_grad_x">Alt Gradient</label>
+                    <input type="radio" id="spdgrad_x" name="radio_x" value="spdGrad" > <label for="spd_grad_x">Speed Gradient</label>
+                </div>
+                <button class="btnHide" data-tgt="XYGraph">Show/Hide graph</button>
+            </div>
+            <canvas width="600" height="600" id="XYGraph"> </canvas>
+        </div>
     </div>
 
     <script src="TCXAnalyzer.js"> // Will add functions required to parse variable </script>
     <script>
-        function getRadioValue(radioGroupName) {
-            const radioGroup = document.querySelectorAll(`input[name=${radioGroupName}]`);
-            for (let i=0; i<radioGroup.length; i++) {
-                if (radioGroup[i].checked) {
-                    return radioGroup[i].value;
-                }
-            }
-            return undefined;
-        }
-        
+         
         function clearGraphs(contextArray) {
             contextArray.forEach(ctx => { Chart.getChart(ctx).destroy(); });
         }
@@ -76,7 +92,7 @@
         window.trackData = [];
 
         // Getting the graph context
-        const ctx_ts = document.getElementById('mainGraph').getContext('2d');       
+        const ctx_ts = document.getElementById('tsGraph').getContext('2d');       
         const ctx_xy = document.getElementById('XYGraph').getContext('2d');
 
         // Setting up the file loader
@@ -114,16 +130,26 @@
         });
 
         // Setting up widget-update related events
-        document.querySelectorAll('input[name=radio_y]').forEach(widget => widget.addEventListener('change', 
-            () =>  {
-                updateTimeSeriesGraph(ctx_ts, trackData, getRadioValue('radio_y'));
+        
+        document.querySelectorAll('input[name=radio_ts]').forEach(widget => 
+            widget.addEventListener('change', () =>  {
+                updateTimeSeriesGraph(ctx_ts, trackData, getRadioValue('radio_ts'));
+             }));
+        document.querySelectorAll('input[name=radio_y]').forEach(widget => 
+            widget.addEventListener('change', () =>  {
                 updateScatterGraph(ctx_xy, trackData, getRadioValue('radio_x'), getRadioValue('radio_y'))
              }));
-        document.querySelectorAll('input[name=radio_x]').forEach(widget => widget.addEventListener('change', 
-        () =>  {
-            updateScatterGraph(ctx_xy, trackData, getRadioValue('radio_x'), getRadioValue('radio_y'))
-        }));
+        document.querySelectorAll('input[name=radio_x]').forEach(widget => 
+            widget.addEventListener('change', () =>  {
+                updateScatterGraph(ctx_xy, trackData, getRadioValue('radio_x'), getRadioValue('radio_y'))
+            }));
 
+        document.querySelector('#minRange').addEventListener('change', e => console.log(e));
+
+        document.querySelectorAll('.btnHide').forEach(btn => btn.addEventListener('click', e => {
+            console.log(e.target);
+            showHideElement(e.target.dataset['tgt']);
+        }  ));
 
     </script>
 </body>
