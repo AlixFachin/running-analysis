@@ -254,3 +254,9 @@ function getXYSeries(dataArray, xAxis, yAxis) {
 
 }
 
+function filterDataForRange(slider) {
+    const [start, stop] = slider.noUiSlider.get();
+    document.getElementById('sliderMin').innerText = start;
+    document.getElementById('sliderMax').innerText = stop;
+
+}

@@ -7,6 +7,10 @@
     <meta charset="utf-8">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Palanquin+Dark:wght@500&display=swap" rel="stylesheet"> 
+    
+    
+    <link href="node_modules/nouislider/distribute/nouislider.css" rel="stylesheet">
+    <script src="node_modules/nouislider/distribute/nouislider.js"></script>
 </head>
 <body>
     
@@ -20,16 +24,10 @@
         <!-- Graph parameters selector -->
         <div id="paramForm">
             <div class="formWidget">
-                <label for="minRange">Choose start time:</label>
-                <input type="range" id="minRange" min="0" max="100" name="minRange" value="0">
-                <span id="minRangeValue"></span>
+                <div id="slider"></div>
             </div>
-            <div class="formWidget">
-                <label for="maxRange">Choose end time:</label>
-                <input type="range" id="maxRange" min="0" max="100" name="maxRange" value="100">
-                <span id="maxRangeValue"></span>
-            </div>
-        
+            <label for="slider" id="sliderMin"></label>
+            <label for="slider" id="sliderMax"></label>
         </div>
         <p class="credit"> 
             background photo by 
@@ -144,12 +142,19 @@
                 updateScatterGraph(ctx_xy, trackData, getRadioValue('radio_x'), getRadioValue('radio_y'))
             }));
 
-        document.querySelector('#minRange').addEventListener('change', e => console.log(e));
 
         document.querySelectorAll('.btnHide').forEach(btn => btn.addEventListener('click', e => {
             console.log(e.target);
             showHideElement(e.target.dataset['tgt']);
         }  ));
+
+        var slider = document.getElementById('slider');
+        noUiSlider.create(slider, {
+            start: [10, 95],
+            connect:true,
+            range: {'min': 0, 'max': 100},
+        })
+        slider.noUiSlider.on('update', e => filterDataForRange(slider))
 
     </script>
 </body>

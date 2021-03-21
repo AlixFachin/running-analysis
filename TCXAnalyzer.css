@@ -2,7 +2,7 @@ html {
     box-sizing: border-box;
     background: url("img/road-running-mountain-unsplash.jpg") top no-repeat;
     background-size: 100% auto;
-    min-height: 100vh;
+    min-height: 1500px;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 
 }
