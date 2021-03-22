@@ -1,0 +1,28 @@
+{
+  "name": "tcxfileparser",
+  "version": "1.0.0",
+  "description": "read TCX file and displays content in charts",
+  "main": "TCXAnalyzer.js",
+  "dependencies": {
+    "jasmine": "^3.7.0",
+    "nouislider": "^14.6.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlixFachin/running-analysis.git"
+  },
+  "keywords": [
+    "TCX",
+    "Chart"
+  ],
+  "author": "Alix Fachin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AlixFachin/running-analysis/issues"
+  },
+  "homepage": "https://github.com/AlixFachin/running-analysis#readme"
+}
