@@ -1,4 +1,32 @@
-// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: TCXAnalyzer.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: TCXAnalyzer.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 /**
  * Returns a XMLParser function according to the current browser configuration 
@@ -10,7 +38,7 @@ function getXMLParser() {
         parseXml = function(xmlStr) {
             return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
         };
-    } else if (typeof window.ActiveXObject != "undefined" &&
+    } else if (typeof window.ActiveXObject != "undefined" &amp;&amp;
            new window.ActiveXObject("Microsoft.XMLDOM")) {
         parseXml = function(xmlStr) {
             var xmlDoc = new window.ActiveXObject("Microsoft.XMLDOM");
@@ -35,7 +63,7 @@ function getXMLParser() {
  */
 function getRadioValue(radioGroupName) {
     const radioGroup = document.querySelectorAll(`input[name=${radioGroupName}]`);
-    for (let i=0; i<radioGroup.length; i++) {
+    for (let i=0; i&lt;radioGroup.length; i++) {
         if (radioGroup[i].checked) {
             return radioGroup[i].value;
         }
@@ -179,11 +207,11 @@ class Trackpoint {
      * @param  {xmlNode} xml - the XML Element on which to apply this function
      */
     setProperties(xml) {
-        if (xml.nodeType === 1 && Trackpoint.keyProperties[xml.nodeName]) {
+        if (xml.nodeType === 1 &amp;&amp; Trackpoint.keyProperties[xml.nodeName]) {
             const propertyName = Trackpoint.keyProperties[xml.nodeName];
             this[propertyName] = xml.textContent.trim();
         }
-        for (let i=0; i< xml.childElementCount; i++) {
+        for (let i=0; i&lt; xml.childElementCount; i++) {
             this.setProperties(xml.children[i]);
         }
     }
@@ -198,11 +226,11 @@ class Trackpoint {
  */
 function parseXMLTreeAndFillArray(xml, dataArray=[]) {
     
-    if (xml.nodeType === 1 && xml.nodeName === 'Trackpoint') {
+    if (xml.nodeType === 1 &amp;&amp; xml.nodeName === 'Trackpoint') {
         const tp = new Trackpoint(xml);
         dataArray.push(tp);
     } else {
-        for (let i=0; i < xml.childElementCount; i++) {
+        for (let i=0; i &lt; xml.childElementCount; i++) {
             parseXMLTreeAndFillArray(xml.children[i], dataArray);
         }
     }
@@ -323,7 +351,7 @@ function getChartData(dataArray, xAxis, yAxis, startIndex=0, endIndex) {
     const getXData = selector[xAxis] || selector['time'];
     const getYData = selector[yAxis] || selector['speed'];
 
-    return dataArray.filter( (_unused,index) => ((index >= startIndex) && (index <= (endIndex || dataArray.length-1  ) )))
+    return dataArray.filter( (_unused,index) => ((index >= startIndex) &amp;&amp; (index &lt;= (endIndex || dataArray.length-1  ) )))
         .map( tp => ({ x: getXData(tp), y: getYData(tp)}));
 
 }
@@ -359,26 +387,26 @@ function updateSliderWidgets(slider, tcxConfig) {
 function filterDataForRange(slider, tcxConfig) {
     const [start, stop] = slider.noUiSlider.get();
 
-    if (tcxConfig !== undefined && tcxConfig.tcxData !== undefined && tcxConfig.tcxData.length > 0) {
+    if (tcxConfig !== undefined &amp;&amp; tcxConfig.tcxData !== undefined &amp;&amp; tcxConfig.tcxData.length > 0) {
         // Updating the labels near the slider widget
         const newStartIndex = Math.trunc(start/100*(tcxConfig.tcxData.length-1));
         const newEndIdx = Math.trunc(stop/100*(tcxConfig.tcxData.length-1));
         console.log(`Slider: ${start}-${stop} => ${newStartIndex} - ${newEndIdx} (${tcxConfig.tcxData.length} length)`);
 
-        if (tcxConfig.startIndex < newStartIndex) {
+        if (tcxConfig.startIndex &lt; newStartIndex) {
             // then we are REMOVING data at the beginning of the range
             console.log(`Remove from ${tcxConfig.startIndex} to ${newStartIndex}`);
             tcxConfig.removeDataFromCharts(newStartIndex-tcxConfig.startIndex, 'beginning');
             tcxConfig.startIndex = newStartIndex;
 
-        } else if (newStartIndex < tcxConfig.startIndex) {
+        } else if (newStartIndex &lt; tcxConfig.startIndex) {
             // then we are ADDING data at the beginnig of the range
             console.log(`Add from ${newStartIndex} to ${tcxConfig.startIndex}`)
             tcxConfig.addDataToCharts(newStartIndex, tcxConfig.startIndex-1, 'beginning');
             tcxConfig.startIndex = newStartIndex
         }
 
-        if (newEndIdx < tcxConfig.endIndex ) {
+        if (newEndIdx &lt; tcxConfig.endIndex ) {
             // We have to remove data at the end
             console.log(`Remove at the end from ${newEndIdx} to ${tcxConfig.endIndex}`);
             tcxConfig.removeDataFromCharts(tcxConfig.endIndex - newEndIdx, 'end');
@@ -393,3 +421,26 @@ function filterDataForRange(slider, tcxConfig) {
     }
 
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#createNewChart">createNewChart</a></li><li><a href="global.html#filterDataForRange">filterDataForRange</a></li><li><a href="global.html#getChart">getChart</a></li><li><a href="global.html#getChartData">getChartData</a></li><li><a href="global.html#getRadioValue">getRadioValue</a></li><li><a href="global.html#getXMLParser">getXMLParser</a></li><li><a href="global.html#gradientColor">gradientColor</a></li><li><a href="global.html#parseXMLTreeAndFillArray">parseXMLTreeAndFillArray</a></li><li><a href="global.html#showHideElement">showHideElement</a></li><li><a href="global.html#updateSliderWidgets">updateSliderWidgets</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Mon Mar 22 2021 16:40:39 GMT+0900 (Japan Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

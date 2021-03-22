@@ -1,3 +1,5 @@
 *.tcx
 node_modules
 .DS_Store
+jasmine.json
+
