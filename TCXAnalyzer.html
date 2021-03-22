@@ -103,6 +103,7 @@
  
             tcxConfig.destroyAllCharts();
             tcxConfig.resetConfig();
+            if (slider) {slider.noUiSlider.set([0,100])}
 
             if (document.querySelector('#file-input').files.length === 0) {
                 document.querySelector('#messageArea').innerHTML = `Error: No file selected`;
@@ -147,10 +148,15 @@
         var slider = document.getElementById('slider');
         noUiSlider.create(slider, {
             start: [10, 95],
+            step: 1,
             connect:true,
             range: {'min': 0, 'max': 100},
         })
-        slider.noUiSlider.on('update', e => filterDataForRange(slider, tcxConfig))
+        slider.noUiSlider.set([0,100]);
+        slider.noUiSlider.on('update', e => {
+            updateSliderWidgets(slider, tcxConfig);
+            filterDataForRange(slider, tcxConfig);
+        });
 
     </script>
 </body>

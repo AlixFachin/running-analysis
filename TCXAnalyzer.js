@@ -74,7 +74,7 @@ class TCXConfig {
     constructor() {
         this.tcxData = [];
         this.startIndex = 0;
-        this.stopIndex = 100;
+        this.endIndex = 100;
         this.chartList = {}
         this.xmlParser = getXMLParser();
     }
@@ -82,7 +82,7 @@ class TCXConfig {
     resetConfig() {
         this.tcxData = [];
         this.startIndex = 0;
-        this.stopIndex = 100;
+        this.endIndex = 100;
     }
 
     destroyAllCharts() {
@@ -95,6 +95,35 @@ class TCXConfig {
         })
     } 
 
+    removeDataFromCharts(length, location) {
+        Object.keys(this.chartList).forEach(chartKey => {
+            const activityGraph = this.chartList[chartKey];
+            if (activityGraph.chartObj !== undefined) {
+                if (location === 'beginning') {
+                        activityGraph.chartObj.data.datasets[0].data.splice(0,length);
+                    } else {
+                        activityGraph.chartObj.data.datasets[0].data.splice(-length,length);
+                    }
+                activityGraph.chartObj.update();                            
+            }
+        });
+    }
+
+    addDataToCharts(startIndex, endIndex, location) {
+        Object.keys(this.chartList).forEach(chartKey => {
+            const activityGraph = this.chartList[chartKey];
+            const newData = getChartData(this.tcxData,activityGraph.xAxis, activityGraph.yAxis,startIndex, endIndex);
+            if (location === 'beginning') {
+                activityGraph.chartObj.data.datasets[0].data.splice(0,0,...newData);
+            } else {
+                activityGraph.chartObj.data.datasets[0].data = activityGraph.chartObj.data.datasets[0].data.concat(newData);
+            }
+            activityGraph.chartObj.update();
+
+        });
+
+    }
+
     addChart(context, xAxis, yAxis, chartType) {
         const newChart = new ActivityChartData(context, xAxis, yAxis, chartType);
         this.chartList[context.canvas.id] = newChart;
@@ -104,6 +133,8 @@ class TCXConfig {
     parseXMLData(textContent) {
         const xmlDocumentTree = this.xmlParser(textContent);
         parseXMLTreeAndFillArray(xmlDocumentTree,this.tcxData);
+        this.startIndex = 0;
+        this.endIndex = this.tcxData.length-1;
     }
 
     refreshWholeGraph(canvasID, newXAxis, newYAxis) {
@@ -292,7 +323,7 @@ function getChartData(dataArray, xAxis, yAxis, startIndex=0, endIndex) {
     const getXData = selector[xAxis] || selector['time'];
     const getYData = selector[yAxis] || selector['speed'];
 
-    return dataArray.filter( (_unused,index) => ((index >= startIndex) && (index <= (endIndex || dataArray.length  ) )))
+    return dataArray.filter( (_unused,index) => ((index >= startIndex) && (index <= (endIndex || dataArray.length-1  ) )))
         .map( tp => ({ x: getXData(tp), y: getYData(tp)}));
 
 }
@@ -311,29 +342,13 @@ function updateSliderWidgets(slider, tcxConfig) {
         document.getElementById('sliderMax').innerText = stop;
     } else {
         // Updating the labels near the slider widget
-        const firstIndex = Math.trunc(start/100*trackConfig.trackData.length);
-        const lastIndex = Math.trunc(stop/100*trackConfig.trackData.length);
-        const firstDate = new Date(trackConfig.trackData[firstIndex].timestamp);
-        const lastDate = new Date(trackConfig.trackData[lastIndex].timestamp);
+        const firstIndex = Math.trunc(start/100*(tcxConfig.tcxData.length-1));
+        const lastIndex = Math.trunc(stop/100*(tcxConfig.tcxData.length-1));
+        const firstDate = new Date(tcxConfig.tcxData[firstIndex].timestamp);
+        const lastDate = new Date(tcxConfig.tcxData[lastIndex].timestamp);
         document.getElementById('sliderMin').innerText = firstDate.toLocaleTimeString();
         document.getElementById('sliderMax').innerText = lastDate.toLocaleTimeString();
     }
-}
-
-function removeChartData(ctx, length, location='beginning') {
-    const myChart = getChart(ctx);
-    if (location === 'beginning') {
-        myChart.data.datasets[0].data.splice(0,length);
-    } else {
-        myChart.data.datasets[0].data.splice(-length,length);
-    }
-    myChart.update();
-}
-
-function addChartData(ctx,length, location='beginning') {
-    const myChart = getChart(ctx);
-
-
 }
 
 /**
@@ -346,21 +361,32 @@ function filterDataForRange(slider, tcxConfig) {
 
     if (tcxConfig !== undefined && tcxConfig.tcxData !== undefined && tcxConfig.tcxData.length > 0) {
         // Updating the labels near the slider widget
-        const newStartIndex = Math.trunc(start/100*tcxConfig.tcxData.length);
-        const newEndIdx = Math.trunc(stop/100*tcxConfig.tcxData.length);
-       
+        const newStartIndex = Math.trunc(start/100*(tcxConfig.tcxData.length-1));
+        const newEndIdx = Math.trunc(stop/100*(tcxConfig.tcxData.length-1));
+        console.log(`Slider: ${start}-${stop} => ${newStartIndex} - ${newEndIdx} (${tcxConfig.tcxData.length} length)`);
+
         if (tcxConfig.startIndex < newStartIndex) {
             // then we are REMOVING data at the beginning of the range
-            console.log(`Remove from ${tcxConfig.startIndex} to ${newStartIndex}`)
-            removeChartData(tcxConfig.ctx_ts,newStartIndex-tcxConfig.startIndex,'beginning');
-            removeChartData(tcxConfig.ctx_xy,newStartIndex-tcxConfig.startIndex,'beginning');
+            console.log(`Remove from ${tcxConfig.startIndex} to ${newStartIndex}`);
+            tcxConfig.removeDataFromCharts(newStartIndex-tcxConfig.startIndex, 'beginning');
             tcxConfig.startIndex = newStartIndex;
 
         } else if (newStartIndex < tcxConfig.startIndex) {
             // then we are ADDING data at the beginnig of the range
             console.log(`Add from ${newStartIndex} to ${tcxConfig.startIndex}`)
+            tcxConfig.addDataToCharts(newStartIndex, tcxConfig.startIndex-1, 'beginning');
+            tcxConfig.startIndex = newStartIndex
+        }
 
-
+        if (newEndIdx < tcxConfig.endIndex ) {
+            // We have to remove data at the end
+            console.log(`Remove at the end from ${newEndIdx} to ${tcxConfig.endIndex}`);
+            tcxConfig.removeDataFromCharts(tcxConfig.endIndex - newEndIdx, 'end');
+            tcxConfig.endIndex = newEndIdx; 
+        } else if (newEndIdx > tcxConfig.endIndex) {
+            console.log(`Add at the end from ${tcxConfig.endIndex} to ${ newEndIdx}`);
+            tcxConfig.addDataToCharts(tcxConfig.endIndex+1,newEndIdx,'end');
+            tcxConfig.endIndex = newEndIdx;
         }
 
 
