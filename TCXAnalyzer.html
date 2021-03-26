@@ -8,8 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Palanquin+Dark:wght@500&display=swap" rel="stylesheet"> 
     
     
-    <link href="node_modules/nouislider/distribute/nouislider.css" rel="stylesheet">
-    <script src="node_modules/nouislider/distribute/nouislider.js"></script>
+    <link href="lib/nouislider.css" rel="stylesheet">
+    <script src="lib/nouislider.js"></script>
     
     <link rel="stylesheet" href="TCXAnalyzer.css">
     
@@ -154,8 +154,9 @@
         })
         slider.noUiSlider.set([0,100]);
         slider.noUiSlider.on('update', e => {
+            const [start, stop] = slider.noUiSlider.get();
             updateSliderWidgets(slider, tcxConfig);
-            filterDataForRange(slider, tcxConfig);
+            filterDataForRange(start, stop, tcxConfig);
         });
 
     </script>

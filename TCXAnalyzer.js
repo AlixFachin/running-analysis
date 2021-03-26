@@ -25,7 +25,6 @@ function getXMLParser() {
     return parseXml;
 }
 
-
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 /* HTML Helper functions */
 /**
@@ -68,7 +67,6 @@ class ActivityChartData {
         this.chartType = chartType;
     }
 }
-
 
 class TCXConfig {
     constructor() {
@@ -354,16 +352,15 @@ function updateSliderWidgets(slider, tcxConfig) {
 /**
  * updates Chart Data to have a nice animation when we add and remove points with the slider widget
  * @param  {Node} slider - node Element which contains the slider UI
- * @param  {TCXConfig} trackConfig - global TCX Config object
+ * @param  {TCXConfig} tcxConfig - global TCX Config object
  */
-function filterDataForRange(slider, tcxConfig) {
-    const [start, stop] = slider.noUiSlider.get();
-
+function filterDataForRange(startPercent, stopPercent, tcxConfig) {
+    
     if (tcxConfig !== undefined && tcxConfig.tcxData !== undefined && tcxConfig.tcxData.length > 0) {
         // Updating the labels near the slider widget
-        const newStartIndex = Math.trunc(start/100*(tcxConfig.tcxData.length-1));
-        const newEndIdx = Math.trunc(stop/100*(tcxConfig.tcxData.length-1));
-        console.log(`Slider: ${start}-${stop} => ${newStartIndex} - ${newEndIdx} (${tcxConfig.tcxData.length} length)`);
+        const newStartIndex = Math.trunc(startPercent/100*(tcxConfig.tcxData.length-1));
+        const newEndIdx = Math.trunc(stopPercent/100*(tcxConfig.tcxData.length-1));
+        console.log(`Slider: ${startPercent}-${stopPercent} => ${newStartIndex} - ${newEndIdx} (${tcxConfig.tcxData.length} length)`);
 
         if (tcxConfig.startIndex < newStartIndex) {
             // then we are REMOVING data at the beginning of the range
