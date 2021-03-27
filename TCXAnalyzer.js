@@ -41,6 +41,7 @@ function getRadioValue(radioGroupName) {
     }
     return undefined;
 }
+
 /**
  * function which toggles visible/invisible an element by changing the display and visibility properties
  * @param  {string} elementID - the ID of the DOM element of which the visibility/display will be toggled
@@ -153,16 +154,6 @@ class TCXConfig {
 
 class Trackpoint {
     
-    static keyProperties = {
-        'ns3:Speed' : 'speed',
-        'LatitudeDegrees' : 'lat',
-        'LongitudeDegrees' : 'long',
-        'Time' : 'timestamp',
-        'AltitudeMeters' : 'altitude',
-        'DistanceMeters' : 'distance',
-        'HeartRateBpm' : 'hr',
-    }
-
     constructor(xml) {
         if (xml.nodeType !== 1 || xml.nodeName !== 'Trackpoint' ) {
             // Should maybe raise an error there
@@ -171,14 +162,34 @@ class Trackpoint {
         }
         this.setProperties(xml);
      }
+     /**
+      * Returns a string which corresponds to a "beautification" of the XML nodename
+      * Using a function to protect the data structure (no private values in JS)
+      * and because the "static" function is not implemented in Safari
+      * @param  {xmlLabel} xmlLabel - the xml.nodeName of TCX file node
+      * @returns {string} - internal application label corresponding to this XML parameter
+      */ 
+     getPropertyName(xmlLabel) {
+         const keyProperties = {
+            'ns3:Speed' : 'speed',
+            'LatitudeDegrees' : 'lat',
+            'LongitudeDegrees' : 'long',
+            'Time' : 'timestamp',
+            'AltitudeMeters' : 'altitude',
+            'DistanceMeters' : 'distance',
+            'HeartRateBpm' : 'hr',
+        };
+
+        return keyProperties[xmlLabel];
+     }
 
     /**
      * Looks at the current XML node and its children and adds the datapoint properties to the current data point
      * @param  {xmlNode} xml - the XML Element on which to apply this function
      */
     setProperties(xml) {
-        if (xml.nodeType === 1 && Trackpoint.keyProperties[xml.nodeName]) {
-            const propertyName = Trackpoint.keyProperties[xml.nodeName];
+        if (xml.nodeType === 1 && this.getPropertyName(xml.nodeName)) {
+            const propertyName = this.getPropertyName(xml.nodeName);
             this[propertyName] = xml.textContent.trim();
         }
         for (let i=0; i< xml.childElementCount; i++) {
