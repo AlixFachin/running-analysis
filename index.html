@@ -19,6 +19,17 @@
     
     <div id="headerArea">
         <h1>TCX File Analysis</h1>
+        <div id="howto">
+            <p>
+                <ul>
+                    <li> <a href="https://support.strava.com/hc/en-us/articles/216917807-Exporting-files-from-Garmin-Connect">Export your run data</a> into a TCX file, </li>
+                    <li> Click on the 'Choose File' button and select your run file</li>
+                    <li> Click on the 'Read and Parse File' button</li>
+                    <li> Choose the data to be actually display on each grap</li>
+                    <li> Use the slide selector to filter out data at the beginning or at the end of your life</li>
+                </ul>
+            </p>
+        </div>
         <input type="file" id="file-input" />
         <button id="read-button">Read and Parse File</button>
         <p id="messageArea"></p>
@@ -43,8 +54,8 @@
         <div class="chartBox">
             <div class="paramArea">
                 <!-- Radio buttons for Y axis -->
+                <label>Y axis:</label>
                 <div class="formWidget">
-                    <label>Y axis:</label>
                     <input type="radio" id="speed_ts" name="radio_ts" value="speed" data-canvas="tsGraph"> <label for="speed_ts">Speed</label>
                     <input type="radio" id="alt_ts" name="radio_ts" value="altitude" data-canvas="tsGraph"> <label for="alt_ts">Altitude</label>
                     <input type="radio" id="hr_ts" name="radio_ts" value="hr" data-canvas="tsGraph" checked > <label for="hr_ts">HR</label>
@@ -82,6 +93,7 @@
         </div>
     </div>
 
+    <script src="htmlHelper.js"></script>
     <script src="TCXAnalyzer.js"> // Will add functions required to parse variable </script>
     <script>
          
@@ -93,10 +105,8 @@
         window.tcxConfig = new TCXConfig();
 
         // Getting the graph context
-        const ctx_ts = document.getElementById('tsGraph').getContext('2d');       
-        const ctx_xy = document.getElementById('XYGraph').getContext('2d');
-        tcxConfig.ctx_ts = ctx_ts;
-        tcxConfig.ctx_xy = ctx_xy;
+        tcxConfig.ctx_ts = document.getElementById('tsGraph').getContext('2d');       
+        tcxConfig.ctx_xy = document.getElementById('XYGraph').getContext('2d');
 
         // Setting up the file loader
         document.querySelector('#read-button').addEventListener('click', e => {
@@ -117,10 +127,9 @@
             fileReader.addEventListener('load', e => {
                 const text = e.target.result;
                 tcxConfig.parseXMLData(text);
-                tcxConfig.addChart(ctx_ts,'time',getRadioValue('radio_ts'), 'line');
-                tcxConfig.addChart(ctx_xy, getRadioValue('radio_x'), getRadioValue('radio_y'), 'scatter');                
+                tcxConfig.addChart(tcxConfig.ctx_ts,'time',getRadioValue('radio_ts'), 'line');
+                tcxConfig.addChart(tcxConfig.ctx_xy, getRadioValue('radio_x'), getRadioValue('radio_y'), 'scatter');                
             }); 
-
             
             const file = document.querySelector('#file-input').files[0];
             fileReader.readAsText(file);
@@ -131,14 +140,12 @@
         document.querySelectorAll('input[type=radio]').forEach(widget => 
             widget.addEventListener('change', (e) => {
                 
-                const xy_selector = {
+                const axes_selector = {
                     'radio_ts' : ['time' , getRadioValue('radio_ts')],
                     'radio_x' :  [ getRadioValue('radio_x'),getRadioValue('radio_y')],
                     'radio_y' : [ getRadioValue('radio_x'),getRadioValue('radio_y')],
                 }
-                console.log(e);  // REMOVE FOR PROD
-                tcxConfig.refreshWholeGraph(e.target.dataset['canvas'],...xy_selector[e.target.name]);
-
+                tcxConfig.refreshWholeGraph(e.target.dataset['canvas'],...axes_selector[e.target.name]);
             }))
 
         document.querySelectorAll('.btnHide').forEach(btn => btn.addEventListener('click', e => {

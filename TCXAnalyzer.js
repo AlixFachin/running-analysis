@@ -1,62 +1,6 @@
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-/**
- * Returns a XMLParser function according to the current browser configuration 
- */
-function getXMLParser() {
-    let parseXml;
 
-    if (typeof window.DOMParser != "undefined") {
-        parseXml = function(xmlStr) {
-            return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
-        };
-    } else if (typeof window.ActiveXObject != "undefined" &&
-           new window.ActiveXObject("Microsoft.XMLDOM")) {
-        parseXml = function(xmlStr) {
-            var xmlDoc = new window.ActiveXObject("Microsoft.XMLDOM");
-            xmlDoc.async = "false";
-            xmlDoc.loadXML(xmlStr);
-            return xmlDoc;
-        };
-    } else {
-        throw new Error("No XML parser found");
-    }
-
-    return parseXml;
-}
-
-// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-/* HTML Helper functions */
-/**
- * Function will look into the DOM for all input elements of the parameter radioGroup, and returns the corresponding value
- * @param  {string} radioGroupName - string containing the name property of the radio group
- * @returns {string} - value attribute of the radio element selected
- */
-function getRadioValue(radioGroupName) {
-    const radioGroup = document.querySelectorAll(`input[name=${radioGroupName}]`);
-    for (let i=0; i<radioGroup.length; i++) {
-        if (radioGroup[i].checked) {
-            return radioGroup[i].value;
-        }
-    }
-    return undefined;
-}
-
-/**
- * function which toggles visible/invisible an element by changing the display and visibility properties
- * @param  {string} elementID - the ID of the DOM element of which the visibility/display will be toggled
- */
-function showHideElement(elementID) {
-    const elementNode = document.querySelector(`#${elementID}`);
-    if (elementNode.style.visibility === 'hidden') {
-        elementNode.style.display = 'block';
-        elementNode.style.visibility = 'visible';
-    } else {
-        elementNode.style.display = 'none';
-        elementNode.style.visibility = 'hidden';
-    }
-
-}
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Classes required to store the current application state
 
@@ -128,10 +72,26 @@ class TCXConfig {
         this.chartList[context.canvas.id] = newChart;
         newChart.chartObj = createNewChart(context, this.tcxData, xAxis, yAxis, chartType);
     }
-
+    
+    /** Main function which reads the content of a TCX file and adds data to the internal structure
+     * @param  {string} textContent - string which contains the TCX file content (expected to be the output of a file read)
+     */
     parseXMLData(textContent) {
+        // Defining a recursive helper function to browse through the XML tree and fill the data structure accordingly
+        function parseXMLTreeAndFillArray(xml) {
+            if (xml.nodeType === 1 && xml.nodeName === 'Trackpoint') {
+                const tp = new Trackpoint(xml);
+                this.tcxData.push(tp);
+            } else {
+                for (let i=0; i < xml.childElementCount; i++) {
+                    parseXMLTreeAndFillArray.call(this,xml.children[i]);
+                }
+            }
+        }
+
+        this.tcxData = [];
         const xmlDocumentTree = this.xmlParser(textContent);
-        parseXMLTreeAndFillArray(xmlDocumentTree,this.tcxData);
+        parseXMLTreeAndFillArray.call(this,xmlDocumentTree);
         this.startIndex = 0;
         this.endIndex = this.tcxData.length-1;
     }
@@ -199,23 +159,6 @@ class Trackpoint {
 
 }
 
-// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-/**
- * browse the XML tree given in parameter and fills the dataArray step by step
- * @param  {xmlNode} xml - XML node, initially given by a file XML parser
- * @param  {array} dataArray=[] - array in which will be added all the activity points
- */
-function parseXMLTreeAndFillArray(xml, dataArray=[]) {
-    
-    if (xml.nodeType === 1 && xml.nodeName === 'Trackpoint') {
-        const tp = new Trackpoint(xml);
-        dataArray.push(tp);
-    } else {
-        for (let i=0; i < xml.childElementCount; i++) {
-            parseXMLTreeAndFillArray(xml.children[i], dataArray);
-        }
-    }
-}
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // CHART-RELATED ROUTINES
@@ -223,7 +166,7 @@ function parseXMLTreeAndFillArray(xml, dataArray=[]) {
  * function which looks at all the Chart instances and returns the Chart.js contained in the context
  * @param  {2Dcontext} context - the context which contains the Chart.js object
  */
-function getChart(context) {
+function getChartFromContext(context) {
     
     for (let chartId in Chart.instances) {
         let currentChart = Chart.instances[chartId];
